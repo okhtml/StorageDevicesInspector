@@ -71,7 +71,7 @@ Once the script finishes, a `StorageDevicesInfo.json` file will be generated in 
 ### 💻 **Linux (Bash Script)**
 
 #### 🧩 **Dependencies**
-This script requires `jq` to format the output as JSON. Depending on your distribution, follow the appropriate instructions to install it.
+- This script requires `jq` to format the output as JSON. Depending on your distribution, follow the appropriate instructions to install it.
 
 - For Debian/Ubuntu-based Systems (apt):
     ```bash
