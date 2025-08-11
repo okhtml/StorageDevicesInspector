@@ -30,7 +30,7 @@ This tool is perfect for users needing a quick overview of all connected storage
   git clone https://github.com/AliJ-Official/StorageDevicesInspector.git
   ```
 
-If you don't have Git installed, you can download the zip file from [this link](https://codeload.github.com/AliJ-Official/TempMail/zip/refs/heads/main) and extract it.
+If you don't have Git installed, you can download the zip file from [this link](https://codeload.github.com/AliJ-Official/StorageDevicesInspector/zip/refs/heads/main) and extract it.
 
 ### 2. Navigate to the **StorageDevicesInspector** Directory
 
@@ -140,3 +140,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 * PowerShell for Windows: Pre-installed on most Windows systems
 
 ---
+
