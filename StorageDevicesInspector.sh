@@ -1,19 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-# Initialize an empty array to store the results.
+# Initialize an empty array to store the results
 RESULTS=()
-# Output file where the final JSON will be saved.
+# Output file where the final JSON will be saved
 OUTPUT_FILE="StorageDevicesInfo.json"
 
-# Function to convert bytes to gigabytes, with 2 decimal places.
+# Function to convert bytes to gigabytes, with 2 decimal places
 bytes_to_gb() {
     awk -v bytes="$1" 'BEGIN { printf("%.2f", bytes/1024/1024/1024) }'
 }
 
 # Function to handle JSON string formatting:
-# If the value is empty or "null", it returns a literal "null" in JSON format.
-# Otherwise, it escapes the string and wraps it in double quotes for valid JSON.
+# If the value is empty or "null", it returns a literal "null" in JSON format
+# Otherwise, it escapes the string and wraps it in double quotes for valid JSON
 json_str_or_null() {
     local val=$1
     
@@ -24,40 +24,40 @@ json_str_or_null() {
     fi
 }
 
-# Function to gather information about a storage device.
+# Function to gather information about a storage device
 gather_device_info() {
     local devicePath=$1
     local deviceType=$2
 
-    # Get properties of the device using udevadm.
+    # Get properties of the device using udevadm
     properties=$(udevadm info --query=property --name="$devicePath" 2>/dev/null || echo "")
 
-    # Extract specific device information from the properties.
+    # Extract specific device information from the properties
     serialNumber=$(grep -m1 '^ID_SERIAL_SHORT=' <<< "$properties" | cut -d= -f2 || echo "")
     model=$(grep -m1 '^ID_MODEL=' <<< "$properties" | cut -d= -f2 || echo "")
     vendorID=$(grep -m1 '^ID_VENDOR_ID=' <<< "$properties" | cut -d= -f2 || echo "")
     productID=$(grep -m1 '^ID_MODEL_ID=' <<< "$properties" | cut -d= -f2 || echo "")
 
-    # Get total device size in bytes and GB.
+    # Get total device size in bytes and GB
     totalSizeBytes=$(lsblk -bn -d -o SIZE "$devicePath")
     totalSizeGB=$(bytes_to_gb "$totalSizeBytes")
 
-    # Get partitions of the device.
+    # Get partitions of the device
     partitions=$(lsblk -ln -o NAME,TYPE "$devicePath" | awk '$2=="part" {print $1}')
 
-    # Initialize a JSON array for partition details.
+    # Initialize a JSON array for partition details
     partitionsJson="["
     freeSpaceBytesSum=0
     first=1
 
-    # Iterate over each partition to gather more info.
+    # Iterate over each partition to gather more info
     for partition in $partitions; do
         local partitionPath="/dev/$partition"
         fileSystem=$(lsblk -no FSTYPE "$partitionPath" | xargs || echo "")
         volumeName=$(lsblk -no LABEL "$partitionPath" | xargs || echo "")
         mountPoint=$(lsblk -no MOUNTPOINT "$partitionPath" | xargs || echo "")
 
-        # If partition is mounted, calculate its free space.
+        # If partition is mounted, calculate its free space
         if [[ -n "$mountPoint" ]]; then
             freeSpaceBytes=$(df --output=avail -B1 "$mountPoint" 2>/dev/null | tail -n1 | xargs || echo 0)
             freeSpaceBytesSum=$((freeSpaceBytesSum + freeSpaceBytes))
